@@ -159,11 +159,39 @@
     2. 执行：**consul agent -dev -node machine -client 0.0.0.0 -ui** 运行后，可以通过外部 **ip:8500** 访问web ui界面，注意：如果不加-client 0.0.0.0则不能被外部访问。
 
 14. 创建8006端口provider-payment微服务，注册到consul中
-	1. 创建cloud-provider-payment在8006端口的微服务
-	2. 添加POM（consul），写yml（consul配置）
-	4. 写主启动类，写controller，添加数据库相关依赖以及配置
-	6. 测试（通过consul Web UI查看是否注册成功、通过url访问能够返回结果）
+    1. 创建cloud-provider-payment在8006端口的微服务
+
+    2. 添加POM（consul），写yml（consul配置），如下
+
+       * ```xml
+                 <!--        添加consul依赖-->
+                 <dependency>
+                     <groupId>org.springframework.cloud</groupId>
+                     <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+                 </dependency>
+         ```
+
+       * ```yaml
+         spring:
+           application:
+             name: cloud-provider-payment
+           cloud:
+             #添加consul配置
+             consul:
+               host: 192.168.56.101
+               port: 8500
+               discovery:
+                 service-name: ${spring.application.name}
+                 heartbeat:
+                   enabled: true
+         ```
+
+    3. 写主启动类，写controller，添加数据库相关依赖以及配置
+
+    4. 测试（通过consul Web UI查看是否注册成功、通过url访问能够返回结果）
+
 15. 创建80端口consumer-order微服务，注册到consul中
+
     1. 创建80微服务
     2. 添加pom（consul），写yml（consul配置）
     3. 写主启动类，写RestTemplate配置，写controller调用8006端口服务
