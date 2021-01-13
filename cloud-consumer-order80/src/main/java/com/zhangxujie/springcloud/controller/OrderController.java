@@ -10,6 +10,7 @@ import com.netflix.discovery.EurekaClient;
 import com.zhangxujie.springcloud.model.CommonResult;
 import com.zhangxujie.springcloud.model.Payment;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,9 +39,21 @@ public class OrderController {
 
     @GetMapping("/get/{id}")
     public CommonResult<Payment> getPayment(@PathVariable("id") Long id) {
-
         return restTemplate.getForObject(SERVICE_PAYMENT + "/payment/" + id, CommonResult.class);
+    }
 
+    @GetMapping("/get/getentity/{id}")
+    public CommonResult<Payment> getPayment2(@PathVariable("id") Long id){
+        //getForEntity
+        ResponseEntity<CommonResult> entity = restTemplate.getForEntity(SERVICE_PAYMENT + "/payment/" + id, CommonResult.class);
+        log.info(entity.getStatusCode().toString());
+        log.info(entity.getHeaders().toString());
+        log.info(entity.getBody().toString());
+        if (entity.getStatusCode().is2xxSuccessful()){
+            return entity.getBody();
+        }else {
+            return new CommonResult<>(500, "操作失败");
+        }
     }
 
 }
