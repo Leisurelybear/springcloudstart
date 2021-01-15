@@ -205,3 +205,39 @@
 
    3. 重启服务，url调用，发现80端口会随机调用8001/8002的服务
 
+### 17. Ribbon补充：自己写负载均衡算法
+
+1. 在**80端口微服务**上改造
+2. 在配置类中，去除@LoadBalanced注解
+3. 创建LoadBalancer接口
+4. 创建MyLB类继承LoadBalancer，标记为Component
+5. 在80端口微服务，添加一个GetMapping方法，测试是否成功。
+
+### 18. OpenFeign：80端口使用接口调用微服务
+
+* 模式：接口+注解，微服务调用接口，使用在Consumer端
+
+1. 新建80端口微服务：cloud-consumer-feign-order80
+2. POM（添加openfeign）：cloud-consumer-feign-order80/pom.xml
+3. YML：cloud-consumer-feign-order80/src/main/resources/application.yml
+4. 主启动类， 添加@EnableFeignClients注解
+5. 业务类
+   1. 写service层接口
+      1. 在consumer微服务下，写service.PaymentFeignService接口
+      2. 使用@FeignClient注解标识，value="远程微服务名称"，path="请求地址前缀，用于全部方法"
+      3. 写微服务的方法，类似Controller层写法（这里实际封装了RestTemplate调用api的过程）
+   2. 写controller层，见源代码
+6. 测试，启动，访问consumer的url
+7. OpenFeign：超时控制机制（默认调用超过1s则异常），在YML中开启配置
+   1. 由内部Ribbon控制超时
+   2. YML加入配置：cloud-consumer-feign-order80/src/main/resources/application.yml
+8. OpenFeign：日志增强 80端口微服务
+   1. 写配置类FeignConfig：cloud-consumer-feign-order80/src/main/java/com/zhangxujie/springcloud/config/FeignConfig.java
+   2. YML配置：cloud-consumer-feign-order80/src/main/resources/application.yml
+   3. 重启80端口微服务，调用，查看后台控制台有详细日志
+
+
+
+
+
+
