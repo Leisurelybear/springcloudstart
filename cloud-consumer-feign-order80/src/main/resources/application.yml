@@ -11,3 +11,8 @@ eureka:
 ribbon:
   ReadTimeout: 5000 # 从服务器读取到资源的时间
   ConnectTimeout: 5000 # 建立连接时间
+
+# #bilibili# P46
+logging:
+  level:
+    com.zhangxujie.springcloud.service.PaymentFeignService: debug
