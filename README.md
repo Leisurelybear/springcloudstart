@@ -2,7 +2,7 @@
 > 该项目为学习尚硅谷周阳老师的SpringCloud微服务教程的学习项目，[参考视频](https://www.bilibili.com/video/BV1yE411x7Ky)
 
 ## 项目记录
-
+* 使用 #bilibili# 标签，标注某部分代码出现在视频的第几P，从42P开始标记，之前都没有。
 
 ### 1. 先创建provider-payment8001微服务
    1. pom依赖，加入springboot，mysql，mybatis，devtools（支持热部署，可选），lombok（简化开发）等依赖。

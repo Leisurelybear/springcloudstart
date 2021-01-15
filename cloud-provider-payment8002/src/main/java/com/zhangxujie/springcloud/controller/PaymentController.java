@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import com.zhangxujie.springcloud.service.PaymentService;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -51,6 +52,17 @@ public class PaymentController {
             return new CommonResult(200, "查询成功，服务端口：" + serverPort, payment);
         } else {
             return new CommonResult(500, "查询失败！", null);
+        }
+    }
+
+    @GetMapping(value = "/feign/timeout")//#bilibili#P45
+    public String paymentFeignTimeout(){
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            return serverPort;
         }
     }
 

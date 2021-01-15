@@ -7,14 +7,19 @@
 package com.zhangxujie.springcloud.controller;
 
 import com.netflix.discovery.EurekaClient;
+import com.zhangxujie.springcloud.lb.LoadBalancer;
 import com.zhangxujie.springcloud.model.CommonResult;
 import com.zhangxujie.springcloud.model.Payment;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/order")
@@ -29,6 +34,12 @@ public class OrderController {
 
     @Resource
     private RestTemplate restTemplate;
+
+    @Resource
+    private LoadBalancer loadBalancer;
+
+    @Resource
+    private DiscoveryClient discoveryClient;
 
     @GetMapping("/create")
     public CommonResult<Payment> createPayment(Payment payment) {
@@ -54,6 +65,19 @@ public class OrderController {
         }else {
             return new CommonResult<>(500, "操作失败");
         }
+    }
+
+    @GetMapping("/lb/{id}")//通过这个controller调用，会使用自己定义的轮询方式调用Payment微服务 #bilibili#第42P
+    public String getPaymentMyLB(@PathVariable("id") Long id){
+        //这里如果要正常运行，需要注释掉config中的@LoadBalanced注解
+        List<ServiceInstance> instances =  discoveryClient.getInstances("CLOUD-PAYMENT-SERVICE");
+        if (instances == null || instances.size() <= 0){
+            return null;
+        }
+        ServiceInstance serviceInstance = loadBalancer.instances(instances);
+        URI uri = serviceInstance.getUri();
+        System.out.println(uri);
+        return restTemplate.getForObject(uri + "/payment/" + id, String.class);
     }
 
 }
