@@ -2,7 +2,10 @@
 > 该项目为学习尚硅谷周阳老师的SpringCloud微服务教程的学习项目，[参考视频](https://www.bilibili.com/video/BV1yE411x7Ky)
 
 ## 项目记录
+
 * 使用 #bilibili# 标签，标注某部分代码出现在视频的第几P，从42P开始标记，之前都没有。
+
+
 
 ### 1. 先创建provider-payment8001微服务
    1. pom依赖，加入springboot，mysql，mybatis，devtools（支持热部署，可选），lombok（简化开发）等依赖。
@@ -138,19 +141,19 @@
 5. 测试验证，通过写一个controller，查看是否成功返回
 
 
-### 12. 写注册zk的80端口consumer微服务
+### 12. 写注册到Zookeeper的80端口consumer微服务
 
 1. 创建cloud-consumerzk-order80微服务
 2. pom(添加zookeeper官方依赖)、yml、主启动类
 3. 写config配置RestTemplate，写controller添加测试方法（80端口通过resttemplate调用8004端口的服务）
 4. 运行order微服务，查看虚拟机的zkCli中的服务是否注册成功
 
-### 13. 装Consul注册中心
+### 13. 安装Consul注册中心
 
 1. 官网下载zip到linux，解压得到consul，可以放到/usr/bin目录方便使用
 2. 执行：**consul agent -dev -node machine -client 0.0.0.0 -ui** 运行后，可以通过外部 **ip:8500** 访问web ui界面，注意：如果不加-client 0.0.0.0则不能被外部访问。
 
-### 14. 创建8006端口provider-payment微服务，注册到consul中
+### 14. 创建8006端口provider-payment微服务，注册到Consul
 1. 创建cloud-provider-payment在8006端口的微服务
 
 2. 添加POM（consul），写yml（consul配置），如下
@@ -182,7 +185,7 @@
 
 4. 测试（通过consul Web UI查看是否注册成功、通过url访问能够返回结果）
 
-### 15. 创建80端口consumer-order微服务，注册到consul中
+### 15. 创建80端口consumer-order微服务，注册到Consul
 
 1. 创建80微服务
 2. 添加pom（consul），写yml（consul配置）
@@ -237,6 +240,38 @@
    3. 重启80端口微服务，调用，查看后台控制台有详细日志
 
 
+
+### 19. 引入Hystrix，创建provider8001端口微服务
+
+1. 创建provider 8001微服务
+2. POM复制之前的，引入hystrix依赖
+3. 写YML，创建Main
+4. 写业务类
+   1. 创建service层，写测试类（正常调用、超时调用）
+   2. 创建controller层，写测试类（包括ok，timeout两个调用）
+5. 开启700xEureka服务，开启这个8001微服务，测试url
+6. 使用Jmeter压测工具测试，向timeout服务多线程请求，体验高并发下访问速度减慢
+   1. 添加【测试计划 -> 线程(用户) -> 线程组】，设置·线程数·和·循环次数·
+   2. 在【线程组】中，添加【取样器 -> HTTP请求】
+   3. 设置IP、端口号、请求路径
+   4. 启动压测，同时刷新OK的服务，发现请求响应速度变慢
+
+
+
+### 20. 引入Hystrix，创建consumer80端口微服务
+
+1. 创建consumer 80微服务（利用RPC框架OpenFeign）
+2. POM复制OpenFeign章节的，另外引入Hystrix依赖
+3. 写YML，复制之前章节的
+4. 写主启动类，添加@EnableFeignClients激活Feign
+5. 写业务类
+   1. service，写OrderHystrixService接口，加注解@Component、@FeignClient(value、path)，写接口方法
+   2. controller，@Resource注解标注service，使用RPC框架远程调用8001端口微服务的方法。
+6. 启动，测试，调用是否成功，开启Jmeter压测，再通过RPC调用8001微服务，观察效果
+
+### 21. Hystrix配置：服务降级、熔断、限流
+
+#### 21.1. 服务降级
 
 
 
