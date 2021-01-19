@@ -8,7 +8,7 @@ package com.zhangxujie.springcloud.controller;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
-import com.zhangxujie.springcloud.service.OrderHystrixService;
+import com.zhangxujie.springcloud.service.PaymentHystrixService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,10 +20,11 @@ import javax.annotation.Resource;
 @RestController
 @Slf4j
 @RequestMapping("/order/hystrix")
+//@DefaultProperties(defaultFallback = "defaultFallbackMethod") //默认fallback方法
 public class OrderHystrixController {
 
     @Resource
-    private OrderHystrixService service;
+    private PaymentHystrixService service;
 
     @GetMapping("/ok/{id}")
     public String paymentInfoOK(@PathVariable("id") Integer id) {
@@ -51,4 +52,8 @@ public class OrderHystrixController {
     public String paymentInfoTimeoutFallbackMethod(@PathVariable("id") Integer id) {
         return "消费者80端口，8001端口超时（时间>1.5s），请稍后重试！";
     }
+
+//    public String defaultFallbackMethod(){
+//        return "全局fallback";
+//    }
 }

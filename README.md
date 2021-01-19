@@ -281,5 +281,16 @@
    1. YML开启feign.hystrix.enabled=true
    2. 主启动加@EnableHystrix
    3. 写业务类：OrderController，其中添加@HystrixCommand，写降级处理方法
+3. fallback和业务代码耦合问题
+   1. 可以配置DefaultFallback
+      1. 在类上使用@DefaultProperties(defaultFallback=“methodName”)注解标识默认fallback方法
+      2. 写降级方法
+      3. 需要降级方法只加@HystrixCommand注解，不需要写参数
+   2. 解除耦合：对于80端口
+      1. 创建PaymentHystrixFallbackService类(@Component)，实现Feign的PaymentHystrixService接口
+      2. 对于每个方法，返回内容为服务降级后返回的内容
+      3. YML中feign.hystrix.enabled=true
+      4. PaymentHystrixService接口的@FeignClient指定降级类：fallback = PaymentHystrixFallbackService.class
+
 
 
