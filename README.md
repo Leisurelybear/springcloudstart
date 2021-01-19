@@ -292,5 +292,8 @@
       3. YML中feign.hystrix.enabled=true
       4. PaymentHystrixService接口的@FeignClient指定降级类：fallback = PaymentHystrixFallbackService.class
 
+#### 21.2. 服务熔断
+
+1. 改造hystrix8001微服务
 
 
