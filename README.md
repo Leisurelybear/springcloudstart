@@ -273,6 +273,13 @@
 
 #### 21.1. 服务降级
 
-
+1. 8001端口微服务fallback：
+   1. Service业务类加@HystrixCommand注解，标注处理降级的方法，处理降级。
+   2. 主启动类激活，@EnableCircuitBreaker
+   3. 运行测试（service写成timeout时间可传参，测试正常情况与降级情况）
+2. 80端口服务fallback
+   1. YML开启feign.hystrix.enabled=true
+   2. 主启动加@EnableHystrix
+   3. 写业务类：OrderController，其中添加@HystrixCommand，写降级处理方法
 
 

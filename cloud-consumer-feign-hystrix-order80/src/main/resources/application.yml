@@ -8,6 +8,10 @@ eureka:
       defaultZone: http://eureka7001.com:7001/eureka, http://eureka7002.com:7002/eureka
 
 #设置feign客户端超时时间
-ribbon:
-  ReadTimeout: 5000 # 从服务器读取到资源的时间
-  ConnectTimeout: 5000 # 建立连接时间
+#ribbon:
+#  ReadTimeout: 5000 # 从服务器读取到资源的时间
+#  ConnectTimeout: 5000 # 建立连接时间
+
+feign:
+  hystrix:
+    enabled: true
