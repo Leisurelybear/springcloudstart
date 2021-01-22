@@ -295,5 +295,33 @@
 #### 21.2. 服务熔断
 
 1. 改造hystrix8001微服务
+    1. 改造hystrix-8001的service方法。
+        1. 写paymentCircuitBreaker方法
+        2. 写fallback方法
+        3. 配置注解，注解内容主要配置HystrixCommandProperties类中的属性值。
+    2. 写controller方法,调用service的circuit方法
+    3. 运行测试
+        1. 正数ID，返回正确
+        2. 负数ID（走fallback）
+        3. 多次负数ID，再正确ID，会触发断路器生效。
+        
+### 21. Hystrix仪表盘图形监控
 
+1. 创建hystrix-dashboard：9001微服务
+2. POM添加hystrix-dashboard依赖，不需要注册到注册中心，不需要hystrix服务，不需要自定义api
+3. 写YML，定义端口号9001
+4. 写SpringBoot Main类，添加注解@EnableHystrixDashboard
+5. 所有Provider微服务需要配置actuator依赖（都已经配过），才能监控
+6. 配置hystrix-8001微服务
+    1. 注意是否添加actuator依赖
+    2. 主启动类添加配置
+    3. 重启运行
+7. 访问http://localhost:9001/hystrix，测试
+    1. 监控url输入：http://localhost:8001/hystrix.stream
+    2. 设置title标题，启动监控
+    3. 多次访问8001正确请求微服务
+    4. 多次访问8001错误请求，触发熔断，查看dashboard
+    5. ![img-21-7-5.png](img/img-21-7-5.png)
+
+    
 
