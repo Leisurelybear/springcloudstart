@@ -76,6 +76,16 @@ public class PaymentController {
             return new CommonResult(500, "查询失败！", null);
         }
     }
+    @GetMapping(value = "/get/{id}")
+    public CommonResult getPaymentById2(@PathVariable("id") Long id) {
+        Payment payment = paymentService.getPaymentById(id);
+        log.info(String.format("****查询结果：【%s】O(∩_∩)O ", payment));
+        if (payment != null) {
+            return new CommonResult(200, "查询成功，服务端口：" + serverPort, payment);
+        } else {
+            return new CommonResult(500, "查询失败！", null);
+        }
+    }
 
     @GetMapping(value = "/feign/timeout") // #bilibili#P45
     public String paymentFeignTimeout(){

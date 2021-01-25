@@ -322,6 +322,21 @@
     3. 多次访问8001正确请求微服务
     4. 多次访问8001错误请求，触发熔断，查看dashboard
     5. ![img-21-7-5.png](img/img-21-7-5.png)
+    
+
+### 22. Gateway网关配置
+
+1. 创建微服务gateway9527
+2. 写POM(gateway依赖，移除web和actuator依赖)
+3. 写YML
+    1. 端口，服务名
+    2. 注册中心
+    3. 配置网关 spring.cloud.gateway.routes
+4. 运行7001，7002，8001，9527
+    1. 访问8001微服务/payment/get/1
+    2. 访问9527转发的微服务：http://xxx:9527/payment/get/1
+5. 通过代码注解方式配置路由(config.GatewayConfig)，尝试访问配置好的地址
+6. 动态路由，通过微服务名轮询不同端口的相同微服务
 
     
 
