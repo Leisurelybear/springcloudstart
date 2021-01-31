@@ -5,16 +5,24 @@ spring:
     name: cloud-gateway
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true # 开启从注册中心自动发现服务
       routes:
         - id: payment_routh
-          uri: http://localhost:8001
-          predicates:
-            - Path=/payment/get/**
-        - id: payment_routh2
-          uri: http://localhost:8001
+#          uri: http://localhost:8001
+          uri: lb://cloud-payment-service
           predicates:
             - Path=/payment/test/**
-
+        - id: payment_routh2
+#          uri: http://localhost:8001
+          uri: lb://cloud-payment-service
+          predicates:
+            - Path=/payment/**
+            # - After=2021-01-26T18:33:19.914+08:00[Asia/Taipei] # 多久之后可以访问，做秒杀，限时访问，预下载使用
+#            - Cookie=username,jason # 需要携带Cookie才可以访问
+#            - Header=X-Request-Id, \d+ # 需要携带该请求头才能访问
+#             cmd测试：curl http://localhost:9527/payment/1 --cookie "username=jason" -H "X-Request-Id:123"
 
 eureka:
   instance:

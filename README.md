@@ -337,6 +337,15 @@
     2. 访问9527转发的微服务：http://xxx:9527/payment/get/1
 5. 通过代码注解方式配置路由(config.GatewayConfig)，尝试访问配置好的地址
 6. 动态路由，通过微服务名轮询不同端口的相同微服务
-
-    
-
+    1. spring.cloud.gateway.discovery.locator.enabled = true # 注册中心自动发现
+    2. uri改为 lb://微服务名
+    3. 启动 7001，7002，8001，8002，9527
+    4. 访问http://localhost:9527/payment/2，每次端口号不同
+7. predicates: 可以配置After（在多久之后可以访问该路由）,Cookie,Header等...
+8. 微服务9527中创建filter.MyLogGatewayFilter来测试Filter的使用
+    1. 使用exchange获取Request值，判断参数是否有uname
+        1. 没有：返回不可访问
+        2. 有：chain过滤链到下一层
+    2. 测试，运行7001，7002，8001，8002，9527
+    3. http://localhost:9527/guonei?uname=jason这样的url可以访问，但是去掉uname则不可访问
+    4. 不可访问：![不可访问](img/img-22-8-3.png)
