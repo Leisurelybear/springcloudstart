@@ -349,3 +349,30 @@
     2. 测试，运行7001，7002，8001，8002，9527
     3. http://localhost:9527/guonei?uname=jason这样的url可以访问，但是去掉uname则不可访问
     4. 不可访问：![不可访问](img/img-22-8-3.png)
+
+### 23. 配置中心 springconfig
+
+1. GitHub或者gitee创建springcloud-config仓库
+    1. 创建config-dev.yml, 写入信息; 创建config-prod.yml,写入信息.
+2. 创建cloud-config-center3344模块
+    1. 主启动类(@EnableConfigServer)、POM(添加新依赖)、配置application.yml(仓库信息等)
+    2. 运行7001,7002,然后3344
+    3. 访问 http://localhost:3344/master/config-dev.yml, 是否成功展示出配置文件
+3. 创建cloud-config-client3355模块
+    1. 主启动类(@EnableConfigServer)、POM(添加client新依赖)
+    2. 配置YML
+        1. 使用:bootstrap.yml(系统级参数,不改变)
+        2. 不使用:application.yml(搭配springcloud-config动态改变), 加载顺序:bootstrap->application
+    3. 写业务类controller
+    4. 启动3355,测试
+        1. 访问:http://localhost:3355/config/username
+        2. 访问:http://localhost:3355/config/password
+        3. 切换配置为prod,再次访问,则会发送变化
+    5. 问题: 更改github的配置, 3344可以获取最新配置,但是3355配置依然缓存之前的没有改变
+        1. POM中引入actuator依赖
+        2. 3355的bootstrap添加配置(management.endpoints.web.exposure.include..),暴露监控端点.
+        3. 业务类Controller添加@RefreshScope注解
+        4. 测试, 先改变github,然后查看3355是否获取到值
+        5. 需要运维改完配置,每次发一条个post来刷新3355: curl -X POST "http://localhost:3355/actuator/refresh"
+        6. 再次测试 3355,可以获取最新配置信息
+        
