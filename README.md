@@ -4,7 +4,17 @@
 ## 项目记录
 
 * 使用 #bilibili# 标签，标注某部分代码出现在视频的第几P，从42P开始标记，之前都没有。
+* 系统hosts映射如下
+```
+# Spring Cloud
+127.0.0.1	eureka7001.com # Eureka服务器映射
+127.0.0.1	eureka7002.com # Eureka集群2服务器映射
+127.0.0.1	localhost
+127.0.0.1	config3344.com # spring配置中心映射
 
+# centos 7 - dev
+192.168.56.101	centos.dev # 虚拟机映射，包括zookeeper、consul、RabbitMQ等服务器所在的虚拟机
+```
 
 
 ### 1. 先创建provider-payment8001微服务
@@ -132,7 +142,7 @@
        name: cloud-provider-payment
      cloud:
        zookeeper:
-         connect-string: 192.168.56.101:2181
+         connect-string: centos.dev:2181
    # 除此之外，需要配置DataSource，数据库账号密码，mybatis实体映射位置
    ```
 
@@ -173,7 +183,7 @@
        cloud:
          #添加consul配置
          consul:
-           host: 192.168.56.101
+           host: centos.dev
            port: 8500
            discovery:
              service-name: ${spring.application.name}
@@ -376,3 +386,28 @@
         5. 需要运维改完配置,每次发一条个post来刷新3355: curl -X POST "http://localhost:3355/actuator/refresh"
         6. 再次测试 3355,可以获取最新配置信息
         
+### 24. Rabbit MQ
+1. Linux安装Rabbit MQ（这里是使用Docker安装的）
+    1. 安装docker，参考：https://www.runoob.com/docker/centos-docker-install.html
+    2. 配置docker的清华镜像源
+    3. 安装rabbitmq：management
+    4. 运行，在宿主机访问虚拟机的rabbitmq网页管理测试
+2. 建项目，3366端口微服务，copy 3355微服务
+    1. POM，与3355相同
+    2. 写application.yml，与3355相同，注意改端口号
+3. 3344的config-center添加消息总线RabbitMQ依赖
+    1. pom添加依赖spring-cloud-starter-bus-amqp
+    2. yml中添加RabbitMQ的配置
+4. 3355、3366两个集群客户端添加RabbitMQ配置
+    1. pom添加依赖
+    2. yml中添加RabbitMQ的配置
+5. 启动7001、7002、3344、3355、3366
+    1. 访问测试3355、3366通
+    2. 改变gitee的配置文件
+    3. 使用命令刷新配置：curl -X POST "http://localhost:3344/actuator/bus-refresh"
+    4. 测试访问3355、3366是否为最新配置
+    5. ![24-5-5 刷新前](img/img-24-5-5.png)
+    6. ![24-5-6 刷新后](img/img-24-5-6.png)
+    7. 原理通过Rabbit MQ做bus来通知
+    8. ![24-5-8 rabbitmq](img/img-24-5-8.png)
+    9. 如果只通知3355端口，则通过服务名+端口号限制：curl -X POST "http://localhost:3344/actuator/bus-refresh/config-client:3355"

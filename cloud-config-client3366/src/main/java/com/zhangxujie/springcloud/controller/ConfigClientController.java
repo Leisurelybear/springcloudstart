@@ -1,7 +1,7 @@
 /**
  * FileName: ConfigClientController
  * Author:   jason
- * Date:     2021/2/4 0:23
+ * Date:     2021/2/8 21:44
  * Description:
  */
 package com.zhangxujie.springcloud.controller;
@@ -33,6 +33,7 @@ public class ConfigClientController {
     public String getConfigPassword() {
         return configPassword;
     }
+
 
     @GetMapping("/configInfo")
     public String getConfigInfo(){
