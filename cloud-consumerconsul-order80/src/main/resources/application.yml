@@ -7,7 +7,7 @@ spring:
   cloud:
     #consul配置
     consul:
-      host: centos.dev
+      host: centos-dev
       port: 8500
       discovery:
         service-name: ${spring.application.name}

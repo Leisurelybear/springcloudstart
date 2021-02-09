@@ -13,7 +13,7 @@
 127.0.0.1	config3344.com # spring配置中心映射
 
 # centos 7 - dev
-192.168.56.101	centos.dev # 虚拟机映射，包括zookeeper、consul、RabbitMQ等服务器所在的虚拟机
+192.168.56.101	centos-dev # 虚拟机映射，包括zookeeper、consul、RabbitMQ等服务器所在的虚拟机
 ```
 
 
@@ -142,7 +142,7 @@
        name: cloud-provider-payment
      cloud:
        zookeeper:
-         connect-string: centos.dev:2181
+         connect-string: centos-dev:2181
    # 除此之外，需要配置DataSource，数据库账号密码，mybatis实体映射位置
    ```
 
@@ -183,7 +183,7 @@
        cloud:
          #添加consul配置
          consul:
-           host: centos.dev
+           host: centos-dev
            port: 8500
            discovery:
              service-name: ${spring.application.name}
@@ -411,3 +411,23 @@
     7. 原理通过Rabbit MQ做bus来通知
     8. ![24-5-8 rabbitmq](img/img-24-5-8.png)
     9. 如果只通知3355端口，则通过服务名+端口号限制：curl -X POST "http://localhost:3344/actuator/bus-refresh/config-client:3355"
+    
+### 25. Stream + RabbitMQ创建提供者8801
+
+1. 创建8801微服务,主启动类
+2. 添加POM依赖：对stream-rabbitmq的依赖
+3. YML配置: stream，以及配置eureka
+4. 写service以及Impl，添加sendMessage功能，实现添加新注解 @EnableBinding
+5. 写controller，调用service
+6. 测试访问：http://localhost:8801/send，成功则显示流水号
+7. 刷新多次访问send API，rabbit管理页面也会看到变化
+    * ![25-7-1](img/img-25-7-1.png)
+    * ![25-7-2](img/img-25-7-2.png)
+    
+### 26. Stream + RabbitMQ创建消费者8802
+
+1. 创建8802微服务，主启动类
+2. 添加POM依赖：对stream-rabbitmq的依赖
+3. YML配置: 和8801相同，注意端口号，还有output改为input
+4. controller，添加注解 @EnableBinding, 写消费RabbitMQ的业务代码
+5. 8801和8802实际演示了RabbitMQ通过JavaAPI的消息生产与消费

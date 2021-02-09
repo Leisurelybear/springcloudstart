@@ -5,4 +5,4 @@ spring:
     name: cloud-consumer-order
   cloud:
     zookeeper:
-      connect-string: centos.dev:2181
+      connect-string: centos-dev:2181

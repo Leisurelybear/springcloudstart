@@ -12,7 +12,7 @@ spring:
       uri: http://localhost:3344 # 配置中心地址
   # 添加Rabbit MQ的配置
   rabbitmq:
-    host: centos.dev
+    host: centos-dev
     port: 5672
     username: guest
     password: guest
